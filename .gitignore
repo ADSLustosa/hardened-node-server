@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+*.log
+
+# Segredos nunca entram no repositório; só o modelo
+.env
+.env.*
+!.env.example
