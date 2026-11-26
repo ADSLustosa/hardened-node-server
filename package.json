@@ -1,0 +1,12 @@
+{
+  "name": "hardened-node-server",
+  "version": "0.1.0",
+  "description": "Production-minded HTTP server in pure Node.js: no frameworks, zero runtime dependencies, secure by default.",
+  "license": "MIT",
+  "author": "ADSLustosa",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26 <27"
+  }
+}
