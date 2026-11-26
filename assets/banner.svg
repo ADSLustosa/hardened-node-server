@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-label="hardened-node-server: Production-minded HTTP server in pure Node.js">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#121c33"/></linearGradient>
+<linearGradient id="shield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fb950"/><stop offset="1" stop-color="#58a6ff"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.04"/></pattern>
+</defs>
+<rect width="1280" height="360" rx="20" fill="url(#bg)"/>
+<rect width="1280" height="360" rx="20" fill="url(#grid)"/>
+<g transform="translate(70 92)">
+<path d="M60 0 L120 22 V70 C120 112 94 140 60 156 C26 140 0 112 0 70 V22 Z" fill="url(#shield)"/>
+<path d="M60 14 L106 31 V70 C106 103 86 126 60 140 C34 126 14 103 14 70 V31 Z" fill="#0b1220" fill-opacity="0.35"/>
+<path d="M36 78 L54 96 L88 58" fill="none" stroke="#ffffff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text x="230" y="138" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="50" font-weight="700" fill="#e6edf3">hardened-node-server</text>
+<text x="230" y="184" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="25" font-weight="600" fill="#e6edf3">Production-minded HTTP server in pure Node.js</text>
+<text x="230" y="218" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#9fb3c8">no frameworks · zero runtime dependencies · secure by default</text>
+<rect x="230" y="250" width="148" height="34" rx="17" fill="#0f1a2e" stroke="#3fb950" stroke-opacity="0.55"/>
+<text x="304" y="272" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#e6edf3" text-anchor="middle">node:http only</text>
+<rect x="389.6" y="250" width="148" height="34" rx="17" fill="#0f1a2e" stroke="#3fb950" stroke-opacity="0.55"/>
+<text x="463" y="272" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#e6edf3" text-anchor="middle">0 runtime deps</text>
+<rect x="549.2" y="250" width="164" height="34" rx="17" fill="#0f1a2e" stroke="#3fb950" stroke-opacity="0.55"/>
+<text x="631" y="272" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#e6edf3" text-anchor="middle">defense in depth</text>
+<rect x="725.6" y="250" width="181" height="34" rx="17" fill="#0f1a2e" stroke="#3fb950" stroke-opacity="0.55"/>
+<text x="816" y="272" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#e6edf3" text-anchor="middle">built step by step</text>
+<circle cx="1105" cy="180" r="160" fill="none" stroke="#3fb950" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="none"/>
+<text x="1105" y="34" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">timeouts</text>
+<circle cx="1105" cy="180" r="140" fill="none" stroke="#58a6ff" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="1105" y="54" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">rate limit</text>
+<circle cx="1105" cy="180" r="120" fill="none" stroke="#3fb950" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="none"/>
+<text x="1105" y="74" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">router</text>
+<circle cx="1105" cy="180" r="100" fill="none" stroke="#58a6ff" stroke-opacity="0.55" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="1105" y="94" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">body limits</text>
+<circle cx="1105" cy="180" r="80" fill="none" stroke="#3fb950" stroke-opacity="0.65" stroke-width="2" stroke-dasharray="none"/>
+<text x="1105" y="114" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">headers</text>
+<circle cx="1105" cy="180" r="60" fill="none" stroke="#58a6ff" stroke-opacity="0.75" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="1105" y="134" font-family="'Cascadia Code', 'Ubuntu Mono', Consolas, monospace" font-size="11" fill="#9fb3c8" text-anchor="middle">cookies</text>
+<circle cx="1105" cy="180" r="44" fill="url(#shield)"/>
+<text x="1105" y="185" font-family="'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" fill="#0b1220" text-anchor="middle">your code</text>
+</svg>
