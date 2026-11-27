@@ -16,6 +16,7 @@
   "scripts": {
     "start": "node src/server.ts",
     "dev": "node --watch src/server.ts",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test": "node --test \"test/**/*.test.ts\""
   }
 }
