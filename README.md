@@ -7,6 +7,7 @@
 [![License](https://img.shields.io/github/license/ADSLustosa/hardened-node-server?style=for-the-badge)](LICENSE)
 [![Version](https://img.shields.io/github/package-json/v/ADSLustosa/hardened-node-server?style=for-the-badge)](package.json)
 ![Node](https://img.shields.io/badge/node-%3E%3D26%20%3C27-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-7%20native-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Runtime dependencies](https://img.shields.io/badge/runtime%20deps-0-3fb950?style=for-the-badge)
 ![Signed commits](https://img.shields.io/badge/commits-signed-6f42c1?style=for-the-badge&logo=git&logoColor=white)
 ![Status](https://img.shields.io/badge/status-in%20progress-d29922?style=for-the-badge)
@@ -71,9 +72,11 @@ Many data leaks do not come from brilliant hackers but from **default settings n
 | Secure development workflow | Signed commits, branch protection, PR-only changes ([#2](https://github.com/ADSLustosa/hardened-node-server/pull/2)) | ✅ |
 | Secret leak prevention | gitleaks and private key detection in pre-commit | ✅ |
 | Supply-chain awareness | No runtime packages, tools pinned to exact commits | ✅ |
-| HTTP fundamentals | Router, status codes, request body handling (steps 2 to 4) | ⏳ |
+| Type-safe code | Strict `tsc` with `erasableSyntaxOnly`, run on native TypeScript ([#6](https://github.com/ADSLustosa/hardened-node-server/pull/6)) | ✅ |
+| Automated testing | `node:test` suite with a red proof and a security regression test ([#6](https://github.com/ADSLustosa/hardened-node-server/pull/6)) | ✅ |
+| HTTP fundamentals | Router, status codes, request body handling (steps 3 to 4) | ⏳ |
 | Application security | Security headers, cookies, rate limiting (steps 5 to 7) | ⏳ |
-| Testing and DevOps | Automated tests, CI, hardened container (step 9) | ⏳ |
+| DevOps | CI pipeline and hardened container (step 9) | ⏳ |
 
 <details>
 <summary><b>📖 Mini dictionary</b></summary>
@@ -121,7 +124,9 @@ Each request crosses the layers in order, and each layer can stop it early with 
 |---|---|:--:|:--:|
 | Secrets leaked into git history | gitleaks + private key detection on every commit | 1 | ✅ |
 | Tampered history or unreviewed changes | Signed commits, protected `main`, PR-only, no force push | 1 | ✅ |
-| Supply-chain attacks | Zero runtime deps, hooks pinned by commit SHA, exact versions | 1 | ✅ |
+| Supply-chain attacks | Zero runtime deps, hooks pinned by commit SHA, exact versions, install scripts blocked, Dependabot with a 7-day cooldown | 1 · 2 | ✅ |
+| Accidental exposure on the network | Listens on `127.0.0.1` unless `HOST` is set explicitly | 2 | ✅ |
+| Server fingerprinting | No `X-Powered-By` header, guarded by a regression test | 2 | ✅ |
 | Memory exhaustion through huge bodies | Size limit → `413 Payload Too Large` | 4 | ⏳ |
 | Content-type confusion and malformed input | `415` / `400` without leaking internals | 4 | ⏳ |
 | Clickjacking, MIME sniffing, XSS impact | CSP, `X-Content-Type-Options`, `frame-ancestors`, HSTS, `Referrer-Policy` | 5 | ⏳ |
@@ -146,7 +151,7 @@ Each request crosses the layers in order, and each layer can stop it early with 
 | # | Step | Status |
 |:--:|---|:--:|
 | 1 | Repository setup and hygiene | ✅ [#2](https://github.com/ADSLustosa/hardened-node-server/pull/2) |
-| 2 | Minimal server (TypeScript via native type stripping) | ⏳ |
+| 2 | Minimal server (TypeScript via native type stripping) | ✅ [#6](https://github.com/ADSLustosa/hardened-node-server/pull/6) |
 | 3 | Router: 404/405 with `Allow` | ⏳ |
 | 4 | Request body: limits and validation (413/415/400) | ⏳ |
 | 5 | Security headers | ⏳ |
@@ -164,14 +169,17 @@ Already enforced today:
 
 - **Line endings and encoding** set by the repository (`.gitattributes`, `.editorconfig`), not by each machine
 - **Node 26 required** (`.nvmrc`, `engines`, `engine-strict`)
-- **Exact dependency versions** (`save-exact`)
+- **Exact dependency versions** (`save-exact`) and **install scripts blocked** (`ignore-scripts`)
+- **Strict type-checking** with `tsc` (`noEmit`, `erasableSyntaxOnly`, `verbatimModuleSyntax`)
+- **Automated tests** with the built-in `node:test` runner
+- **Dependabot** weekly, with a 7-day cooldown and major updates in separate PRs
 - **pre-commit guards:** secret scanning (gitleaks), private key detection, JSON/YAML validation, all pinned by commit SHA
 - **Protected `main`:** signed commits, pull requests only, no force pushes, no deletion
 
 ## 🚀 Getting started
 
 > [!IMPORTANT]
-> There is no server code yet (step 2 is next). Today you can clone the repository and prepare the environment.
+> For now the server answers every request with a JSON health response. Routing arrives in step 3.
 
 Requirements: [Node.js 26](https://nodejs.org/) (via [nvm](https://github.com/nvm-sh/nvm)), [pre-commit](https://pre-commit.com/), Git with commit signing.
 
@@ -179,7 +187,32 @@ Requirements: [Node.js 26](https://nodejs.org/) (via [nvm](https://github.com/nv
 git clone git@github.com:ADSLustosa/hardened-node-server.git
 cd hardened-node-server
 nvm use            # reads .nvmrc and switches to Node 26
+npm ci             # installs the exact versions from package-lock.json
 pre-commit install # enables the guards on every commit
+
+npm test           # runs the test suite
+npm run typecheck  # strict type-checking with tsc
+npm start          # http://127.0.0.1:3000 (HOST and PORT can be overridden)
+```
+
+```console
+$ curl -i http://127.0.0.1:3000/
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 15
+
+{"status":"ok"}
+```
+
+TypeScript runs directly on Node 26 (no build step): `tsc` only checks types.
+
+### Project structure
+
+```text
+src/app.ts      builds the server (importable by tests)
+src/server.ts   entry point: reads HOST/PORT and listens
+test/           node:test suites
+assets/         README visuals and their generator
 ```
 
 ## 🔁 Development workflow

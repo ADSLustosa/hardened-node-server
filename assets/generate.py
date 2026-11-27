@@ -13,7 +13,7 @@ from html import escape
 from pathlib import Path
 
 # Roadmap steps already merged into main. Update together with the README.
-SHIPPED_STEPS: set[int] = set()
+SHIPPED_STEPS: set[int] = {2}
 
 OUT = Path(__file__).resolve().parent
 

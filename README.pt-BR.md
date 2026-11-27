@@ -7,6 +7,7 @@
 [![Licença](https://img.shields.io/github/license/ADSLustosa/hardened-node-server?style=for-the-badge&label=licen%C3%A7a)](LICENSE)
 [![Versão](https://img.shields.io/github/package-json/v/ADSLustosa/hardened-node-server?style=for-the-badge&label=vers%C3%A3o)](package.json)
 ![Node](https://img.shields.io/badge/node-%3E%3D26%20%3C27-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-7%20nativo-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Dependências em produção](https://img.shields.io/badge/depend%C3%AAncias-0-3fb950?style=for-the-badge)
 ![Commits assinados](https://img.shields.io/badge/commits-assinados-6f42c1?style=for-the-badge&logo=git&logoColor=white)
 ![Status](https://img.shields.io/badge/status-em%20constru%C3%A7%C3%A3o-d29922?style=for-the-badge)
@@ -71,9 +72,11 @@ Muitos vazamentos de dados não vêm de hackers geniais, e sim de **configuraç�
 | Fluxo de desenvolvimento seguro | Commits assinados, proteção da branch, mudanças só por PR ([#2](https://github.com/ADSLustosa/hardened-node-server/pull/2)) | ✅ |
 | Prevenção de vazamento de segredos | gitleaks e detecção de chave privada no pre-commit | ✅ |
 | Atenção à cadeia de suprimentos | Nenhum pacote em produção, ferramentas fixadas em commits exatos | ✅ |
-| Fundamentos de HTTP | Roteador, códigos de status, tratamento do corpo (etapas 2 a 4) | ⏳ |
+| Código com tipos seguros | `tsc` rigoroso com `erasableSyntaxOnly`, sobre TypeScript nativo ([#6](https://github.com/ADSLustosa/hardened-node-server/pull/6)) | ✅ |
+| Testes automatizados | Suíte com `node:test`, prova vermelha e teste de regressão de segurança ([#6](https://github.com/ADSLustosa/hardened-node-server/pull/6)) | ✅ |
+| Fundamentos de HTTP | Roteador, códigos de status, tratamento do corpo (etapas 3 e 4) | ⏳ |
 | Segurança de aplicações | Cabeçalhos de segurança, cookies, rate limiting (etapas 5 a 7) | ⏳ |
-| Testes e DevOps | Testes automatizados, CI, contêiner endurecido (etapa 9) | ⏳ |
+| DevOps | Pipeline de CI e contêiner endurecido (etapa 9) | ⏳ |
 
 <details>
 <summary><b>📖 Minidicionário</b></summary>
@@ -121,7 +124,9 @@ Cada requisição atravessa as camadas em ordem, e cada camada pode interrompê-
 |---|---|:--:|:--:|
 | Segredos vazados no histórico do git | gitleaks + detecção de chave privada em todo commit | 1 | ✅ |
 | Histórico adulterado ou mudanças sem revisão | Commits assinados, `main` protegida, só PR, sem force push | 1 | ✅ |
-| Ataques à cadeia de suprimentos | Zero dependências em produção, hooks fixados por SHA, versões exatas | 1 | ✅ |
+| Ataques à cadeia de suprimentos | Zero dependências em produção, hooks fixados por SHA, versões exatas, scripts de instalação bloqueados, Dependabot com espera de 7 dias | 1 · 2 | ✅ |
+| Exposição acidental na rede | Escuta em `127.0.0.1`, a menos que `HOST` seja definido de forma explícita | 2 | ✅ |
+| Identificação da tecnologia do servidor | Sem o cabeçalho `X-Powered-By`, protegido por teste de regressão | 2 | ✅ |
 | Esgotamento de memória com corpos enormes | Limite de tamanho → `413 Payload Too Large` | 4 | ⏳ |
 | Confusão de content-type e entrada malformada | `415` / `400` sem expor detalhes internos | 4 | ⏳ |
 | Clickjacking, MIME sniffing, impacto de XSS | CSP, `X-Content-Type-Options`, `frame-ancestors`, HSTS, `Referrer-Policy` | 5 | ⏳ |
@@ -146,7 +151,7 @@ Cada requisição atravessa as camadas em ordem, e cada camada pode interrompê-
 | # | Etapa | Status |
 |:--:|---|:--:|
 | 1 | Configuração e higiene do repositório | ✅ [#2](https://github.com/ADSLustosa/hardened-node-server/pull/2) |
-| 2 | Servidor mínimo (TypeScript com type stripping nativo) | ⏳ |
+| 2 | Servidor mínimo (TypeScript com type stripping nativo) | ✅ [#6](https://github.com/ADSLustosa/hardened-node-server/pull/6) |
 | 3 | Roteador: 404/405 com `Allow` | ⏳ |
 | 4 | Corpo da requisição: limites e validação (413/415/400) | ⏳ |
 | 5 | Cabeçalhos de segurança | ⏳ |
@@ -164,14 +169,17 @@ Já aplicados hoje:
 
 - **Fim de linha e codificação** definidos pelo repositório (`.gitattributes`, `.editorconfig`), e não por cada máquina
 - **Node 26 obrigatório** (`.nvmrc`, `engines`, `engine-strict`)
-- **Versões exatas de dependências** (`save-exact`)
+- **Versões exatas de dependências** (`save-exact`) e **scripts de instalação bloqueados** (`ignore-scripts`)
+- **Verificação rigorosa de tipos** com `tsc` (`noEmit`, `erasableSyntaxOnly`, `verbatimModuleSyntax`)
+- **Testes automatizados** com o executor nativo `node:test`
+- **Dependabot** semanal, com espera de 7 dias e atualizações major em PRs separados
 - **Barreiras no pre-commit:** varredura de segredos (gitleaks), detecção de chave privada, validação de JSON/YAML, todas fixadas por SHA de commit
 - **`main` protegida:** commits assinados, só pull requests, sem force push e sem exclusão
 
 ## 🚀 Como começar
 
 > [!IMPORTANT]
-> Ainda não há código do servidor (a etapa 2 é a próxima). Hoje é possível clonar o repositório e preparar o ambiente.
+> Por enquanto, o servidor responde a toda requisição com um JSON de saúde (health). O roteamento chega na etapa 3.
 
 Requisitos: [Node.js 26](https://nodejs.org/) (via [nvm](https://github.com/nvm-sh/nvm)), [pre-commit](https://pre-commit.com/), Git com assinatura de commits.
 
@@ -179,7 +187,32 @@ Requisitos: [Node.js 26](https://nodejs.org/) (via [nvm](https://github.com/nvm-
 git clone git@github.com:ADSLustosa/hardened-node-server.git
 cd hardened-node-server
 nvm use            # lê o .nvmrc e troca para o Node 26
+npm ci             # instala as versões exatas do package-lock.json
 pre-commit install # ativa as barreiras em todo commit
+
+npm test           # roda a suíte de testes
+npm run typecheck  # verificação rigorosa de tipos com o tsc
+npm start          # http://127.0.0.1:3000 (HOST e PORT podem ser alterados)
+```
+
+```console
+$ curl -i http://127.0.0.1:3000/
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 15
+
+{"status":"ok"}
+```
+
+O TypeScript roda direto no Node 26 (sem etapa de build): o `tsc` só verifica os tipos.
+
+### Estrutura do projeto
+
+```text
+src/app.ts      monta o servidor (pode ser importado pelos testes)
+src/server.ts   ponto de entrada: lê HOST/PORT e escuta a porta
+test/           suítes do node:test
+assets/         visuais do README e o gerador deles
 ```
 
 ## 🔁 Fluxo de desenvolvimento
